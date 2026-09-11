@@ -117,74 +117,12 @@ jobs:
       run: |
         cd /mnt/openwrt
         DTS=target/linux/msm89xx/dts/msm8916-thwc-ufi001c.dts
-        cat > $DTS << 'DTSEOF'
-// SPDX-License-Identifier: GPL-2.0-only
-
-/dts-v1/;
-
-#include "msm8916-ufi.dtsi"
-
-/ {
-	model = "ufi-001c 4G Modem Stick";
-	compatible = "thwc,ufi001c", "qcom,msm8916";
-	leds: leds {
-	};
-};
-
-&button_restart {
-	gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
-};
-
-&led_r {
-	gpios = <&tlmm 22 GPIO_ACTIVE_HIGH>;
-};
-
-&led_g {
-	gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
-};
-
-&led_b {
-	gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
-};
-
-&mpss {
-	pinctrl-0 = <&sim_ctrl_default>;
-	pinctrl-names = "default";
-};
-
-&button_default {
-	pins = "gpio37";
-	bias-pull-down;
-};
-
-&gpio_leds_default {
-	pins = "gpio20", "gpio21", "gpio22";
-};
-
-/* This selects the external SIM card slot by default */
-&tlmm {
-	sim_ctrl_default: sim-ctrl-default-state {
-		esim-sel-pins {
-			pins = "gpio0", "gpio3";
-			bias-disable;
-			output-low;
-		};
-
-		sim-en-pins {
-			pins = "gpio1";
-			bias-disable;
-			output-low;
-		};
-
-		sim-sel-pins {
-			pins = "gpio2";
-			bias-disable;
-			output-high;
-		};
-	};
-};
-DTSEOF
-        echo "✅ DTS 修复完成，当前配置："
+        python3 -c "
+        import base64
+        content = base64.b64decode('Ly8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjAtb25seQoKL2R0cy12MS87CgojaW5jbHVkZSAibXNtODkxNi11ZmkuZHRzaSIKCi8gewogICAgbW9kZWwgPSAidWZpLTAwMWMgNEcgTW9kZW0gU3RpY2siOwogICAgY29tcGF0aWJsZSA9ICJ0aHdjLHVmaTAwMWMiLCAicWNvbSxtc204OTE2IjsKICAgIGxlZHM6IGxlZHMgewogICAgfTsKfTsKCiZidXR0b25fcmVzdGFydCB7CiAgICBncGlvcyA9IDwmdGxtbSAzNyBHUElPX0FDVElWRV9ISUdIPjsKfTsKCiZsZWRfciB7CiAgICBncGlvcyA9IDwmdGxtbSAyMiBHUElPX0FDVElWRV9ISUdIPjsKfTsKCiZsZWRfZyB7CiAgICBncGlvcyA9IDwmdGxtbSAyMSBHUElPX0FDVElWRV9ISUdIPjsKfTsKCiZsZWRfYiB7CiAgICBncGlvcyA9IDwmdGxtbSAyMCBHUElPX0FDVElWRV9ISUdIPjsKfTsKCiZtcHNzIHsKICAgIHBpbmN0cmwtMCA9IDwmc2ltX2N0cmxfZGVmYXVsdD47CiAgICBwaW5jdHJsLW5hbWVzID0gImRlZmF1bHQiOwp9OwoKJmJ1dHRvbl9kZWZhdWx0IHsKICAgIHBpbnMgPSAiZ3BpbzM3IjsKICAgIGJpYXMtcHVsbC1kb3duOwp9OwoKJmdwaW9fbGVkc19kZWZhdWx0IHsKICAgIHBpbnMgPSAiZ3BpbzIwIiwgImdwaW8yMSIsICJncGlvMjIiOwp9OwoKLyogVGhpcyBzZWxlY3RzIHRoZSBleHRlcm5hbCBSSU0gY2FyZCBzbG90IGJ5IGRlZmF1bHQgKi8KJnRsbW0gewogICAgc2ltX2N0cmxfZGVmYXVsdDogc2ltLWN0cmwtZGVmYXVsdC1zdGF0ZSB7CiAgICAgICAgZXNpbS1zZWwtcGlucyB7CiAgICAgICAgICAgIHBpbnMgPSAiZ3BpbzAiLCAiZ3BpbzMiOwogICAgICAgICAgICBiaWFzLWRpc2FibGU7CiAgICAgICAgICAgIG91dHB1dC1sb3c7CiAgICAgICAgfTsKCiAgICAgICAgc2ltLWVuLXBpbnMgewogICAgICAgICAgICBwaW5zID0gImdwaW8xIjsKICAgICAgICAgICAgYmlhcy1kaXNhYmxlOwogICAgICAgICAgICBvdXRwdXQtbG93OwogICAgICAgIH07CgogICAgICAgIHNpbS1zZWwtcGlucyB7CiAgICAgICAgICAgIHBpbnMgPSAiZ3BpbzIiOwogICAgICAgICAgICBiaWFzLWRpc2FibGU7CiAgICAgICAgICAgIG91dHB1dC1oaWdoOwogICAgICAgIH07CiAgICB9Owp9Ow==').decode('utf-8')
+        open('$DTS', 'w').write(content)
+        "
+        echo "✅ DTS 修复完成"
         cat $DTS
 
     - name: Load custom DIY_P1_SH
